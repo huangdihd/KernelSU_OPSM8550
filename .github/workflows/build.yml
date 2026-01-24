@@ -30,8 +30,9 @@ jobs:
             lz4 \
             git \
             python3 \
-            curl
-
+            curl \
+            dwarves \
+            cpio
       - name: Clone Kernel Source
         run: |
           git clone --depth=1 -b sixteen-qpr1 https://github.com/OnePlus12R-development/android_kernel_oneplus_sm8550.git sm8550
