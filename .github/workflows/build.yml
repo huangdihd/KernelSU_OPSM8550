@@ -150,11 +150,11 @@ jobs:
           cp sm8550/out/arch/arm64/boot/Image ./Image
           cd AnyKernel3
 
-          zip -r9 ../${ZIP_NAME}.zip * -x .git
+          zip -r9 ../"${ZIP_NAME}.zip" * -x .git
 
       - name: Create GitHub Release
         run: |
           REL_NAME="OPSM8550_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
-          gh release create "$REL_NAME" --title "$REL_NAME" --notes "" ${ZIP_FILE} Image
+          gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
