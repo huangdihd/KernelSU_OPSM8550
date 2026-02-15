@@ -1,5 +1,5 @@
 ***Read the README first***  
-main branch only support android16
+main branch only support android16  
 How to use:
 
 Fork this repo(remember to sync before using)  
