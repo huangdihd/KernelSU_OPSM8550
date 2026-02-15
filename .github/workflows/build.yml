@@ -44,10 +44,10 @@ on:
           - ReSukiSU-with-susfs
           
 jobs:
-  SM8550_Kernel_CI:
+  Kernel_CI:
     env:
-        CLANG_VER: clang-r547379
         GH_TOKEN: ${{ github.token }}
+        SOC: sm8550
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -80,8 +80,8 @@ jobs:
           
       - name: Clone Kernel Source
         run: |
-          git clone --depth=1 -b ${{ inputs.kernel_branch }} https://github.com/${{ inputs.kernel_source }}/android_kernel_oneplus_sm8550.git sm8550
-          git clone --depth=1 -b ${{ inputs.kernel_branch }} https://github.com/${{ inputs.kernel_source }}/android_kernel_oneplus_sm8550-modules.git sm8550-modules
+          git clone --depth=1 -b ${{ inputs.kernel_branch }} https://github.com/${{ inputs.kernel_source }}/android_kernel_oneplus_${SOC}.git ${SOC}
+          git clone --depth=1 -b ${{ inputs.kernel_branch }} https://github.com/${{ inputs.kernel_source }}/android_kernel_oneplus_${SOC}-modules.git ${SOC}-modules
 
       - name: Download AOSP Clang
         run: |
@@ -110,7 +110,7 @@ jobs:
           export OBJDUMP="${CLANG_ROOT}/llvm-objdump"
           export STRIP="${CLANG_ROOT}/llvm-strip"
 
-          cd sm8550
+          cd ${SOC}
 
           case "${{ inputs.ksu_type }}" in
           
@@ -169,15 +169,15 @@ jobs:
           ZIP_NAME="${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
           git clone https://github.com/Kernel-SU/AnyKernel3.git
 
-          cp sm8550/out/arch/arm64/boot/Image AnyKernel3/Image
-          cp sm8550/out/arch/arm64/boot/Image ./Image
+          cp ${SOC}/out/arch/arm64/boot/Image AnyKernel3/Image
+          cp ${SOC}/out/arch/arm64/boot/Image ./Image
           cd AnyKernel3
 
           zip -r9 ../"${ZIP_NAME}.zip" * -x .git
 
       - name: Create GitHub Release
         run: |
-          REL_NAME="OPSM8550_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
+          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
           gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
