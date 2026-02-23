@@ -47,7 +47,7 @@ jobs:
   Kernel_CI:
     env:
         GH_TOKEN: ${{ github.token }}
-        SOC: sm8550
+        SOC: sm8450
     runs-on: ubuntu-latest
     permissions:
       contents: write
