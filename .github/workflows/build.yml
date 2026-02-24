@@ -54,6 +54,11 @@ on:
         required: true
         type: string
 
+      BBG: 
+        description: "Add BBG for kernel"
+        required: true
+        type: boolean
+
           
 jobs:
   Kernel_CI:
@@ -175,6 +180,11 @@ jobs:
             echo "CONFIG_KALLSYMS_ALL=y" >> arch/arm64/configs/gki_defconfig
             echo "CONFIG_KPROBES=y" >> arch/arm64/configs/gki_defconfig
           fi
+
+          if [[ "${{ inputs.BBG }}" == true ]]; then
+            wget -O- https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh | bash
+            echo "CONFIG_BBG=y" >> arch/arm64/configs/gki_defconfig
+            sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig
           
           touch ./.scmversion
           
