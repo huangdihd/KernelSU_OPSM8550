@@ -28,7 +28,7 @@ on:
         description: Kernel Branch(such as lineage-23.2 sixteen-qpr1)
         required: true
         type: string
-        default: ""
+        default: "lineage-23.2"
         
       ksu_type:
         description: "KernelSU Version"
@@ -42,12 +42,24 @@ on:
           - KowSU
           - ReSukiSU
           - ReSukiSU-with-susfs
+
+      kpm_support:
+        description: "If involve kpm support in the kernel"
+        required: true
+        type: boolean
+        default: false
+
+      soc: 
+        description: "The soc you want to run the kernel on"
+        required: true
+        type: string
+
           
 jobs:
   Kernel_CI:
     env:
         GH_TOKEN: ${{ github.token }}
-        SOC: sm8450
+        SOC: ${{inputs.soc }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -146,10 +158,6 @@ jobs:
             cp ./kernel_patches/include/linux/* ../include/linux/
             cd ..
             patch -p1 < 50_add_susfs_in_gki-android12-5.10.patch
-            echo "CONFIG_KPM=y" >> arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KALLSYMS=y" >> arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KALLSYMS_ALL=y" >> arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KPROBES=y" >> arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS=y" >> arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> arch/arm64/configs/gki_defconfig
@@ -160,6 +168,13 @@ jobs:
             echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> arch/arm64/configs/gki_defconfig
           fi
+
+          if [[ "${{ inputs.kpm_support }}" == true ]]; then
+            echo "CONFIG_KPM=y" >> arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KALLSYMS=y" >> arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KALLSYMS_ALL=y" >> arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KPROBES=y" >> arch/arm64/configs/gki_defconfig
+          fi
           
           touch ./.scmversion
           
@@ -168,6 +183,8 @@ jobs:
           make O=out gki_defconfig vendor/waipio_GKI.config vendor/xiaomi_GKI.config vendor/cupid_GKI.config vendor/debugfs.config
 
           make -j2 O=out Image
+      
+
 
       - name: Make AnyKernel3
         run: |
