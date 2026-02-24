@@ -44,18 +44,18 @@ on:
           - ReSukiSU-with-susfs
 
       kpm_support:
-        description: "If involve kpm support in the kernel"
+        description: "Add KPM support"
         required: true
         type: boolean
         default: false
 
       soc: 
-        description: "The soc you want to run the kernel on"
+        description: "SOC"
         required: true
         type: string
 
       BBG: 
-        description: "Add BBG for kernel"
+        description: "Add BBG support"
         required: true
         type: boolean
 
