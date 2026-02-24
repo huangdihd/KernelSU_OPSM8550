@@ -187,9 +187,7 @@ jobs:
             sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig
           fi
 
-          echo "CONFIG_LOCALVERSION=\"-huangdihd\"" >> arch/arm64/configs/gki_defconfig
-          
-          touch ./.scmversion
+          echo "-huangdihd" > .scmversion 
           
           echo "CONFIG_TMPFS_XATTR=y" >> arch/arm64/configs/gki_defconfig
           
