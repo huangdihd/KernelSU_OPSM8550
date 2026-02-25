@@ -23,7 +23,12 @@ on:
           - LineageOS
           - crdroidandroid
           - OnePlus12R-development
-          
+
+      soc: 
+        description: "SOC"
+        required: true
+        type: string
+
       kernel_branch:
         description: Kernel Branch(such as lineage-23.2 sixteen-qpr1)
         required: true
@@ -38,21 +43,20 @@ on:
           - None
           - Official-KernelSU
           - KernelSU-Next
-          - KernelSU-Next-with-susfs
           - KowSU
           - ReSukiSU
-          - ReSukiSU-with-susfs
+
+      susfs:
+        description: "Add susfs support"
+        required: true
+        type: boolean
+        default: false
 
       kpm_support:
         description: "Add KPM support"
         required: true
         type: boolean
         default: false
-
-      soc: 
-        description: "SOC"
-        required: true
-        type: string
 
       BBG: 
         description: "Add BBG support"
@@ -143,19 +147,19 @@ jobs:
               ;;
 
             "KernelSU-Next")
-              curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s dev
+              if [[ "${{ inputs.sisfs }}" == true ]]; then
+                curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/refs/heads/dev-susfs/kernel/setup.sh" | bash -s dev-susfs
+              else
+                curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s dev
+              fi
               ;;
 
-            "KernelSU-Next-with-susfs")
-              curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/refs/heads/dev-susfs/kernel/setup.sh" | bash -s dev-susfs
-              ;;
-
-            "ReSukiSU"|"ReSukiSU-with-susfs")
+            "ReSukiSU")
               curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s builtin
               ;;
           esac
           
-          if [[ "${{ inputs.ksu_type }}" == *susfs ]]; then
+          if [[ "${{ inputs.susfs }}" == true ]]; then
             git clone -b gki-android12-5.10 https://gitlab.com/simonpunk/susfs4ksu.git susfs
             cd susfs
             cp ./kernel_patches/50_add_susfs_in_gki-android12-5.10.patch ..
@@ -194,7 +198,20 @@ jobs:
           make O=out gki_defconfig vendor/waipio_GKI.config vendor/xiaomi_GKI.config vendor/cupid_GKI.config vendor/debugfs.config
 
           make -j2 O=out Image
-      
+          
+          if [[ "${{ inputs.kpm_support }}" == true ]]; then
+            echo "Downloading SukiSU_KernelPatch..."
+            curl -s https://api.github.com/repos/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/latest \
+              | grep "browser_download_url" \
+              | grep "patch_linux" \
+              | cut -d '"' -f 4 \
+              | wget -qi -
+            echo "Patching kernel to add KPM support..."
+            chmod +x ./patch_linux
+            ./patch_linux -i ${SOC}/out/arch/arm64/boot/Image
+            rm ${SOC}/out/arch/arm64/boot/Image
+            mv ./oImage ${SOC}/out/arch/arm64/boot/Image
+          fi 
 
 
       - name: Make AnyKernel3
