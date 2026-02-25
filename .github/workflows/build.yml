@@ -22,12 +22,6 @@ on:
         options:
           - LineageOS
           - crdroidandroid
-          - OnePlus12R-development
-
-      soc: 
-        description: "SOC"
-        required: true
-        type: string
 
       kernel_branch:
         description: Kernel Branch(such as lineage-23.2 sixteen-qpr1)
@@ -68,7 +62,7 @@ jobs:
   Kernel_CI:
     env:
         GH_TOKEN: ${{ github.token }}
-        SOC: ${{inputs.soc }}
+        SOC: sm8450
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -243,7 +237,40 @@ jobs:
 
       - name: Create GitHub Release
         run: |
-          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}-${KERNEL_NAME}-$(date -u +"%Y%m%d_%H%M")"
+          BUILD_TIME=$(date -u +"%Y%m%d_%H%M")
+          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}-${KERNEL_NAME}-${BUILD_TIME}"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
-          gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
+
+          if [[ "${{ inputs.susfs }}" == true ]]; then
+            susfs_checkbox="- [x]"
+          else
+            susfs_checkbox="- [ ]"
+          fi
+
+          if [[ "${{ inputs.kpm_support }}" == true ]]; then
+            kpm_checkbox="- [x]"
+          else
+            kpm_checkbox="- [ ]"
+          fi
+
+          if [[ "${{ inputs.BBG }}" == true ]]; then
+            bbg_checkbox="- [x]"
+          else
+            bbg_checkbox="- [ ]"
+          fi
+
+                    
+          gh release create "$REL_NAME" --title "$REL_NAME" --notes "# Unofficial kernel for Xiaomi 12(cupid)
+
+| feature       | value                       |
+| ------------- | --------------------------- |
+| Kernel source | ${{ inputs.kernel_source }} |
+| Kernel branch | ${{ inputs.kernel_branch }} |
+| Kernel name   | ${KERNEL_NAME}              |
+| Build time    | ${BUILD_TIME}               |
+| KSU type      | ${{ inputs.ksu_type }}      |
+| SUSFS         | ${susfs_checkbox}           |
+| KPM           | ${kpm_checkbox}             |
+| BBG patch     | ${bbg_checkbox}             |
+" "${ZIP_FILE}" Image
