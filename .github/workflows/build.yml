@@ -208,7 +208,9 @@ jobs:
               | wget -qi -
             echo "Patching kernel to add KPM support..."
             chmod +x ./patch_linux
+            pwd
             mv ${SOC}/out/arch/arm64/boot/Image ./Image
+            ls 
             ./patch_linux
             rm ./Image
             mv ./oImage ${SOC}/out/arch/arm64/boot/Image
