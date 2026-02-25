@@ -232,7 +232,7 @@ jobs:
 
       - name: Make AnyKernel3
         run: |
-          ZIP_NAME="${{ KERNEL_NAME }}_$(date -u +"%Y%m%d_%H%M")"
+          ZIP_NAME="${KERNEL_NAME}_$(date -u +"%Y%m%d_%H%M")"
           git clone https://github.com/Kernel-SU/AnyKernel3.git
 
           cp ${SOC}/out/arch/arm64/boot/Image AnyKernel3/Image
@@ -243,7 +243,7 @@ jobs:
 
       - name: Create GitHub Release
         run: |
-          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ KERNEL_NAME }}_$(date -u +"%Y%m%d_%H%M")"
+          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${KERNEL_NAME}_$(date -u +"%Y%m%d_%H%M")"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
           gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
