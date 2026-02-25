@@ -133,7 +133,7 @@ jobs:
 
           KERNEL_NAME="${{ inputs.ksu_type }}"
 
-          if [[ "${{ inputs.sisfs }}" == true ]]; then
+          if [[ "${{ inputs.susfs }}" == true ]]; then
             KERNEL_NAME="${KERNEL_NAME}-susfs"
           fi
           if [[ "${{ inputs.kpm_support }}" == true ]]; then
