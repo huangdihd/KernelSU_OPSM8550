@@ -131,7 +131,7 @@ jobs:
           export OBJDUMP="${CLANG_ROOT}/llvm-objdump"
           export STRIP="${CLANG_ROOT}/llvm-strip"
 
-          KERNEL_NAME="${{ inputs.ksu_type }}"
+          KERNEL_NAME="-${{ inputs.ksu_type }}"
 
           if [[ "${{ inputs.susfs }}" == true ]]; then
             KERNEL_NAME="${KERNEL_NAME}-susfs"
