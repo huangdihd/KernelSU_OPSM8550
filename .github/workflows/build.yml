@@ -198,6 +198,8 @@ jobs:
           make O=out gki_defconfig vendor/waipio_GKI.config vendor/xiaomi_GKI.config vendor/cupid_GKI.config vendor/debugfs.config
 
           make -j2 O=out Image
+
+          cd /out/arch/arm64/boot/
           
           if [[ "${{ inputs.kpm_support }}" == true ]]; then
             echo "Downloading SukiSU_KernelPatch..."
@@ -208,12 +210,9 @@ jobs:
               | wget -qi -
             echo "Patching kernel to add KPM support..."
             chmod +x ./patch_linux
-            pwd
-            mv ${SOC}/out/arch/arm64/boot/Image ./Image
-            ls 
             ./patch_linux
             rm ./Image
-            mv ./oImage ${SOC}/out/arch/arm64/boot/Image
+            mv ./oImage ./Image
           fi 
 
 
