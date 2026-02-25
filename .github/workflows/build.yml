@@ -262,15 +262,14 @@ jobs:
 
                     
           gh release create "$REL_NAME" --title "$REL_NAME" --notes "# Unofficial kernel for Xiaomi 12(cupid)
-
-| feature       | value                       |
-| ------------- | --------------------------- |
-| Kernel source | ${{ inputs.kernel_source }} |
-| Kernel branch | ${{ inputs.kernel_branch }} |
-| Kernel name   | ${KERNEL_NAME}              |
-| Build time    | ${BUILD_TIME}               |
-| KSU type      | ${{ inputs.ksu_type }}      |
-| SUSFS         | ${susfs_checkbox}           |
-| KPM           | ${kpm_checkbox}             |
-| BBG patch     | ${bbg_checkbox}             |
-" "${ZIP_FILE}" Image
+          | feature       | value                       |
+          | ------------- | --------------------------- |
+          | Kernel source | ${{ inputs.kernel_source }} |
+          | Kernel branch | ${{ inputs.kernel_branch }} |
+          | Kernel name   | ${KERNEL_NAME}              |
+          | Build time    | ${BUILD_TIME}               |
+          | KSU type      | ${{ inputs.ksu_type }}      |
+          | SUSFS         | ${susfs_checkbox}           |
+          | KPM           | ${kpm_checkbox}             |
+          | BBG patch     | ${bbg_checkbox}             |
+          " "${ZIP_FILE}" Image
