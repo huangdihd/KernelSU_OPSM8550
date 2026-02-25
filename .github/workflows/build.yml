@@ -131,6 +131,20 @@ jobs:
           export OBJDUMP="${CLANG_ROOT}/llvm-objdump"
           export STRIP="${CLANG_ROOT}/llvm-strip"
 
+          KERNEL_NAME="${{ inputs.ksu_type }}"
+
+          if [[ "${{ inputs.sisfs }}" == true ]]; then
+            KERNEL_NAME="${KERNEL_NAME}-susfs"
+          fi
+          if [[ "${{ inputs.kpm_support }}" == true ]]; then
+            KERNEL_NAME="${KERNEL_NAME}-kpm"
+          fi
+          if [[ "${{ inputs.BBG }}" == true ]]; then
+            KERNEL_NAME="${KERNEL_NAME}-BBG"
+          fi
+
+          echo "KERNEL_NAME=${KERNEL_NAME}" >> $GITHUB_ENV
+
           cd ${SOC}
 
           case "${{ inputs.ksu_type }}" in
@@ -147,7 +161,7 @@ jobs:
               ;;
 
             "KernelSU-Next")
-              if [[ "${{ inputs.sisfs }}" == true ]]; then
+              if [[ "${{ inputs.susfs }}" == true ]]; then
                 curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/refs/heads/dev-susfs/kernel/setup.sh" | bash -s dev-susfs
               else
                 curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s dev
@@ -191,7 +205,7 @@ jobs:
             sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig
           fi
 
-          echo "-huangdihd" > .scmversion 
+          echo "${KERNEL_NAME}-${{ github.actor }}" > .scmversion 
           
           echo "CONFIG_TMPFS_XATTR=y" >> arch/arm64/configs/gki_defconfig
           
@@ -218,7 +232,7 @@ jobs:
 
       - name: Make AnyKernel3
         run: |
-          ZIP_NAME="${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
+          ZIP_NAME="${{ KERNEL_NAME }}_$(date -u +"%Y%m%d_%H%M")"
           git clone https://github.com/Kernel-SU/AnyKernel3.git
 
           cp ${SOC}/out/arch/arm64/boot/Image AnyKernel3/Image
@@ -229,7 +243,7 @@ jobs:
 
       - name: Create GitHub Release
         run: |
-          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ inputs.ksu_type }}_$(date -u +"%Y%m%d_%H%M")"
+          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${{ KERNEL_NAME }}_$(date -u +"%Y%m%d_%H%M")"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
           gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
