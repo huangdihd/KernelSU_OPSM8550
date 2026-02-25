@@ -199,7 +199,7 @@ jobs:
 
           make -j2 O=out Image
 
-          cd /out/arch/arm64/boot/
+          cd out/arch/arm64/boot/
           
           if [[ "${{ inputs.kpm_support }}" == true ]]; then
             echo "Downloading SukiSU_KernelPatch..."
