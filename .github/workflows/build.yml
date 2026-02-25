@@ -131,7 +131,7 @@ jobs:
           export OBJDUMP="${CLANG_ROOT}/llvm-objdump"
           export STRIP="${CLANG_ROOT}/llvm-strip"
 
-          KERNEL_NAME="-${{ inputs.ksu_type }}"
+          KERNEL_NAME="${{ inputs.ksu_type }}"
 
           if [[ "${{ inputs.susfs }}" == true ]]; then
             KERNEL_NAME="${KERNEL_NAME}-susfs"
@@ -205,7 +205,7 @@ jobs:
             sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' security/Kconfig
           fi
 
-          echo "${KERNEL_NAME}-${{ github.actor }}" > .scmversion 
+          echo "-${KERNEL_NAME}-${{ github.actor }}" > .scmversion 
           
           echo "CONFIG_TMPFS_XATTR=y" >> arch/arm64/configs/gki_defconfig
           
@@ -243,7 +243,7 @@ jobs:
 
       - name: Create GitHub Release
         run: |
-          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}_${KERNEL_NAME}_$(date -u +"%Y%m%d_%H%M")"
+          REL_NAME="${SOC}_${{ inputs.kernel_source }}-${{ inputs.kernel_branch }}-${KERNEL_NAME}-$(date -u +"%Y%m%d_%H%M")"
           cd ${GITHUB_WORKSPACE}
           ZIP_FILE=$(ls *.zip)
           gh release create "$REL_NAME" --title "$REL_NAME" --notes "" "${ZIP_FILE}" Image
