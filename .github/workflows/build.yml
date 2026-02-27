@@ -243,21 +243,21 @@ jobs:
           ZIP_FILE=$(ls *.zip)
 
           if [[ "${{ inputs.susfs }}" == true ]]; then
-            susfs_checkbox="supported"
+            susfs_checkbox="Supported"
           else
-            susfs_checkbox="unsupported"
+            susfs_checkbox="Unsupported"
           fi
 
           if [[ "${{ inputs.kpm_support }}" == true ]]; then
-            kpm_checkbox="supported"
+            kpm_checkbox="Supported"
           else
-            kpm_checkbox="unsupported"
+            kpm_checkbox="Unsupported"
           fi
 
           if [[ "${{ inputs.BBG }}" == true ]]; then
-            bbg_checkbox="supported"
+            bbg_checkbox="Supported"
           else
-            bbg_checkbox="unsupported"
+            bbg_checkbox="Unsupported"
           fi
 
                     
